@@ -96,7 +96,10 @@
         var fileLogEl = document.getElementById('file-log');
 
         function updateStarProgress() {
-            if (filesTotal <= 0) return;
+            if (filesTotal <= 0) {
+                fill.style.width = '100%';
+                return;
+            }
             var done = filesTotal - filesNeeded;
             fill.style.width = (done / filesTotal * 100) + '%';
         }
@@ -111,6 +114,7 @@
 
         window.SetFilesNeeded = function(needed) {
             filesNeeded = needed;
+            if (filesTotal <= 0) filesTotal = needed;
             updateStarProgress();
         };
 
