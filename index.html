@@ -95,13 +95,16 @@
         var fileLog = [];
         var fileLogEl = document.getElementById('file-log');
 
+        var statusPercent = 0;
+
         function updateStarProgress() {
-            if (filesTotal <= 0) {
-                fill.style.width = '100%';
-                return;
+            var filePercent = 0;
+            if (filesTotal > 0) {
+                var done = filesTotal - filesNeeded;
+                filePercent = (done / filesTotal) * 100;
             }
-            var done = filesTotal - filesNeeded;
-            fill.style.width = (done / filesTotal * 100) + '%';
+            var percent = Math.max(filePercent, statusPercent);
+            fill.style.width = percent + '%';
         }
 
         window.GameDetails = function(servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language) {};
@@ -119,7 +122,20 @@
         };
 
         window.SetStatusChanged = function(status) {
-            document.getElementById('status-label').textContent = status;
+            var label = status;
+            if (status === 'Retrieving server info...') {
+                statusPercent = 10;
+                label = 'Retrieving server info';
+            } else if (status === 'Mounting Addons') {
+                statusPercent = 50;
+            } else if (status === 'Workshop Complete') {
+                statusPercent = 80;
+            } else if (status === 'Sending client info...') {
+                statusPercent = 100;
+                label = 'Finalizing';
+            }
+            document.getElementById('status-label').textContent = label.replace(/[!.]+/g, '').toLowerCase();
+            updateStarProgress();
         };
 
         window.DownloadingFile = function(fileName) {
