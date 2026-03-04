@@ -90,25 +90,40 @@
     <div class="file-log" id="file-log"></div>
 <script>
         var fill = document.getElementById('star-fill');
-
-        function LoadingProgress(progress) {
-            fill.style.width = progress + '%';
-        }
-
-        function SetStatusLabel(status) {
-            document.getElementById('status-label').textContent = status;
-        }
-
+        var filesTotal = 0;
+        var filesNeeded = 0;
         var fileLog = [];
         var fileLogEl = document.getElementById('file-log');
 
-        function DownloadingFile(fileName) {
+        function updateStarProgress() {
+            if (filesTotal <= 0) return;
+            var done = filesTotal - filesNeeded;
+            fill.style.width = (done / filesTotal * 100) + '%';
+        }
+
+        window.GameDetails = function(servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language) {};
+
+        window.SetFilesTotal = function(total) {
+            filesTotal = total;
+            filesNeeded = total;
+            updateStarProgress();
+        };
+
+        window.SetFilesNeeded = function(needed) {
+            filesNeeded = needed;
+            updateStarProgress();
+        };
+
+        window.SetStatusChanged = function(status) {
+            document.getElementById('status-label').textContent = status;
+        };
+
+        window.DownloadingFile = function(fileName) {
             fileLog.unshift(fileName);
             if (fileLog.length > 10) fileLog.pop();
 
             fileLogEl.innerHTML = '';
             for (var i = 0; i < fileLog.length; i++) {
-                var t = i / (Math.max(fileLog.length, 1) - 1 || 1);
                 var entry = document.createElement('div');
                 entry.className = 'file-log-entry';
                 entry.textContent = fileLog[i];
@@ -121,7 +136,7 @@
                 entry.style.marginBottom = '1px';
                 fileLogEl.appendChild(entry);
             }
-        }
+        };
 
         (function () {
             var el = document.getElementById('dots');
